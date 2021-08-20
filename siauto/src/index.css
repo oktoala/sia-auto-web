@@ -33,6 +33,13 @@ header {
     height: 70px;
 }
 
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
 /* Header */
 
 .header_container {
@@ -56,4 +63,12 @@ header {
 .logo_title {
     font-size: 18px;
     font-weight: bold;
+}
+
+/* Main Section */
+
+.main-section {
+  max-width: 400px;
+  width: 100%;
+  height: 100vh;
 }
