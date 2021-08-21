@@ -1,6 +1,14 @@
 import unmul from './img/unmul.png';
 import { Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
+import { FormCheckType } from 'react-bootstrap/esm/FormCheck';
+
+interface Props{
+  children?: React.ReactNode;
+  type?: FormCheckType | undefined;
+  label?: string;
+  required?: boolean;
+}
 
 function App() {
   return (
@@ -35,7 +43,7 @@ function Header() {
   );
 }
 
-function Main(props) {
+function Main(props: Props) {
   return (
     <main>
       {props.children}
@@ -48,20 +56,12 @@ function MainSection() {
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
   const [radioRequired, setRadioRequired] = useState(true);
-  const handleSubmit = (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    setValidated(true);
-  };
 
   return (
     <section className="main-section">
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <FormInput type="nim">NIM</FormInput>
-        <FormInput type="password">Password</FormInput>
+      <Form noValidate validated={validated} >
+        <FormInput >NIM</FormInput>
+        <FormInput >Password</FormInput>
         <Form.Label>Nilai Kuesioner</Form.Label>
         <Form.Group className="mb-3" controlId="basicFormCheckbox">
           {['1', '2', '3', '4', '5'].map((label) => <FormCheckButton
@@ -82,17 +82,17 @@ function MainSection() {
 }
 
 /* Form Input */
-function FormInput(props) {
+function FormInput(props: Props) {
   return (
     <Form.Group className="mb-3" controlId={`basicForm${props.children}`}>
       <Form.Label>{props.children}</Form.Label>
-      <Form.Control type={props.type} placeholder={`Masukkan ${props.children}`} />
+      <Form.Control  placeholder={`Masukkan ${props.children}`} />
     </Form.Group>
   );
 }
 
 /* Kuesioner Checkboxes and RadioButton*/
-function FormCheckButton(props) {
+function FormCheckButton(props: Props) {
   return (
     <Form.Check required={props.required} inline label={props.label} name="group1"
       type={props.type} id={`inline-${props.type}-${props.label}`} />
