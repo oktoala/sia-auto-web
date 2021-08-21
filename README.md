@@ -7,7 +7,7 @@ Supaya kalian bisa menjalankan firebase, jalankan `firebase init function`.
 ```bash
 cd functions
 npm install
-npm run server
+npm run serve
 ```
 
 **Untuk Frontend**
