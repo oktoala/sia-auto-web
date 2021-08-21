@@ -40,6 +40,7 @@ main {
   
 }
 
+
 /* Header */
 
 .header_container {
@@ -58,6 +59,8 @@ main {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    text-decoration: none;
+    color: inherit;
 }
 
 .logo_title {
