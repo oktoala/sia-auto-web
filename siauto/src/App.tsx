@@ -8,7 +8,6 @@ interface Props {
   type?: FormCheckType | undefined;
   label?: string;
   required?: boolean;
-  // onClick?: () => void;
   onClick?: React.MouseEventHandler<HTMLInputElement> | undefined;
 }
 
@@ -75,12 +74,17 @@ const MainSection = () => {
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    const form = event.currentTarget;
+  async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
+    const form = evt.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+      evt.preventDefault();
+      evt.stopPropagation();
     }
+
+    // const res = await fetch('http://localhost:5001/test-web-scrap/us-central1/scraper', {
+    //   method: 'POST',
+    //   body: JSON.stringify({dataColleger})
+    // })
 
     dataColleger.nim  = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
     dataColleger.password  = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
@@ -150,7 +154,7 @@ const FormInput = (props: Props) => {
 /* Kuesioner Checkboxes and RadioButton*/
 const FormCheckButton = (props: Props) => {
   return (
-    <Form.Check onClick={props.onClick} required={props.required} inline label={props.label} name="group1"
+    <Form.Check onClick={props.onClick} required={props.required} inline label={props.label} 
       type={props.type} id={`inline-${props.type}-${props.label}`} />
   );
 }
