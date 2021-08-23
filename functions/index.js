@@ -2,41 +2,6 @@ const functions = require("firebase-functions");
 const { user } = require("firebase-functions/v1/auth");
 const cors = require('cors')({ origin: true });
 
-// const cheerio = require('cheerio');
-// const getUrls = require('get-urls');
-// const fetch = require('node-fetch');
-
-// const scrapeMetaTags = (text) => {
-
-//     const urls = Array.from(getUrls(text));
-//     console.log(urls);
-//     // const urls = [`https://shoppe.co.id/search?keyword=${text}`, `https://www.tokopedia.com/search?st=product&q=${text}&navsource=home`];
-
-    
-//     const request = urls.map(async url => {
-        
-//         const res = await fetch(url);
-//         const html = await res.text();
-//         const $ = cheerio.load(html);
-
-//         // const getMetaTag = (text) =>
-//         //     $(`meta[name="${text}""`).attr('content') ||
-//         //     $(`meta[property="og:${text}]`).attr('content') ||
-//         //     $(`meta[property="twitter:${text}]`).attr('content');
-
-//         return {
-//             url,
-//             title: $('title').first().text(),
-//             token: $('meta[name="csrf-token"]').attr('content')
-//             // description: $('body').text()
-//             // image: getMetaTag('image'),
-//             // author: getMetaTag('author'),
-//         }
-//     });
-
-//     return Promise.all(request);
-
-// }
 exports.scraper = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {
         const body = request.body;

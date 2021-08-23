@@ -1,16 +1,34 @@
 import unmul from './img/unmul.png';
 import { Button, Form } from 'react-bootstrap';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck';
 
-interface Props{
+interface Props {
   children?: React.ReactNode;
   type?: FormCheckType | undefined;
   label?: string;
   required?: boolean;
+  // onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLInputElement> | undefined;
 }
 
-function App() {
+interface DataColleger {
+  nim: string;
+  password: string;
+  semester: string | undefined;
+  nilai: (string | undefined)[];
+  cobaDulu: boolean;
+}
+
+const dataColleger: DataColleger = {
+  nim: "",
+  password: "",
+  nilai: [],
+  semester: "",
+  cobaDulu: false
+}
+
+const App = () => {
   return (
     <div className="App">
       <Header />
@@ -21,7 +39,7 @@ function App() {
   );
 }
 
-function Header() {
+const Header = () => {
   return (
     <header className="header">
       <div className="header_container">
@@ -43,7 +61,7 @@ function Header() {
   );
 }
 
-function Main(props: Props) {
+const Main = (props: Props) => {
   return (
     <main>
       {props.children}
@@ -51,29 +69,67 @@ function Main(props: Props) {
   );
 }
 
-function MainSection() {
+
+const MainSection = () => {
 
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
-  const [radioRequired, setRadioRequired] = useState(true);
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    dataColleger.nim  = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
+    dataColleger.password  = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
+    
+    console.log(dataColleger);
+
+    setValidated(true);
+  }
+
+  function onClickCheckBtn(label: string) {
+    /* Detect if the label found in the array */
+    const index = dataColleger.nilai.indexOf(label);
+    if (index !== -1){
+      console.log("makan");
+      dataColleger.nilai.splice(index, 1);
+    } else {
+      console.log("makan2");
+      dataColleger.nilai.push(label);
+    }
+
+    dataColleger.nilai.sort();
+    console.log(dataColleger.nilai);
+
+    if (dataColleger.nilai.length !== 0){
+      setCheckRequired(false);
+      return;
+    } 
+    
+    setCheckRequired(true);
+    
+  }
 
   return (
     <section className="main-section">
-      <Form noValidate validated={validated} >
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <FormInput >NIM</FormInput>
         <FormInput >Password</FormInput>
         <Form.Label>Nilai Kuesioner</Form.Label>
         <Form.Group className="mb-3" controlId="basicFormCheckbox">
           {['1', '2', '3', '4', '5'].map((label) => <FormCheckButton
-            required={checkRequired} type="checkbox" label={label} />)}
+            onClick={() => onClickCheckBtn(label)} required={checkRequired} type="checkbox" label={label} />)}
         </Form.Group>
         <Form.Label>Semester</Form.Label>
         <Form.Group className="mb-3" controlId="basicFormRadio">
           {['Ganjil', 'Genap'].map((label) => <FormCheckButton
-            required={checkRequired} type="radio" label={label} />)}
+            onClick={() => dataColleger.semester = label} required type="radio" label={label} />)}
         </Form.Group>
         <Form.Group className="mb-3" controlId="basicFormTrust">
-          <FormCheckButton type="checkbox" label="Isi Setengah Dulu" />
+          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi Setengah Dulu" />
         </Form.Group>
         <Button variant="primary" type="submit">Mulai</Button>
       </Form>
@@ -82,23 +138,22 @@ function MainSection() {
 }
 
 /* Form Input */
-function FormInput(props: Props) {
+const FormInput = (props: Props) => {
   return (
     <Form.Group className="mb-3" controlId={`basicForm${props.children}`}>
       <Form.Label>{props.children}</Form.Label>
-      <Form.Control  placeholder={`Masukkan ${props.children}`} />
+      <Form.Control required type="text" placeholder={`Masukkan ${props.children}`} />
     </Form.Group>
   );
 }
 
 /* Kuesioner Checkboxes and RadioButton*/
-function FormCheckButton(props: Props) {
+const FormCheckButton = (props: Props) => {
   return (
-    <Form.Check required={props.required} inline label={props.label} name="group1"
+    <Form.Check onClick={props.onClick} required={props.required} inline label={props.label} name="group1"
       type={props.type} id={`inline-${props.type}-${props.label}`} />
   );
 }
-
 
 
 export default App;
