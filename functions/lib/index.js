@@ -2,14 +2,17 @@
 const functions = require("firebase-functions");
 const { user } = require("firebase-functions/v1/auth");
 const cors = require('cors')({ origin: true });
-const puppeteer = require('puppeteer');
-exports.scraper = functions.https.onRequest(async (request, response) => {
+exports.scraper = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {
-        const text = await request.body;
+        const body = request.body;
+        console.log(typeof body.text);
+        const text = body;
+        // const text = encodeURIComponent(body.text.trim());
         const data = await scrapeImages(text);
         response.send(data);
     });
 });
+const puppeteer = require('puppeteer');
 const scrapeImages = async (mahasiswa) => {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
