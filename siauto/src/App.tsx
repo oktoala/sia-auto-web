@@ -1,14 +1,15 @@
-import unmul from './img/unmul.png';
 import { Button, Form } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck';
+import {ReactComponent as GithubIcon} from './icons/github.svg';
+import {ReactComponent as UnmulIcon} from './icons/unmul.svg';
 
 interface Props {
   children?: React.ReactNode;
   type?: FormCheckType | undefined;
   label?: string;
   required?: boolean;
-  // onClick?: () => void;
+  hidden?: string;
   onClick?: React.MouseEventHandler<HTMLInputElement> | undefined;
 }
 
@@ -46,7 +47,7 @@ const Header = () => {
         <div className="logo">
           <a className="logo" href="/">
             <div className="logo_image">
-              <img width="50px" src={unmul} alt="logo"></img>
+              <UnmulIcon />
             </div>
             <div className="logo_title">
               <span>SIAuto</span>
@@ -54,7 +55,12 @@ const Header = () => {
           </a>
         </div>
         <div className="menu">
-          <span>Contribute</span>
+          <Button variant="light" className="menu">
+            <a target="_blank" rel="noreferrer" href="https://github.com/oktoala/sia-auto-web">
+              <GithubIcon height="25px" />
+              <span>Star</span>
+            </a>
+          </Button>
         </div>
       </div>
     </header>
@@ -69,31 +75,50 @@ const Main = (props: Props) => {
   );
 }
 
-
 const MainSection = () => {
 
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
+  const [dataCollegers, setDataCollegers] = useState([]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    dataColleger.nim  = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
-    dataColleger.password  = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
+  const semester = () => {
     
-    console.log(dataColleger);
+  }
+  
 
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const form = event.currentTarget;
+    event.preventDefault();
+    event.stopPropagation();
+    if (form.checkValidity() === false) {
+      console.log("False");
+    } else {
+      console.log("True");
+      dataColleger.nim = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
+      dataColleger.password = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
+
+      const response = await fetch('http://localhost:5001/test-web-scrap/us-central1/scraper', {
+        method: 'POST',
+        body: JSON.stringify(dataColleger)
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+
+      
+
+      console.log(dataColleger);
+    }
     setValidated(true);
+
+
   }
 
   function onClickCheckBtn(label: string) {
     /* Detect if the label found in the array */
     const index = dataColleger.nilai.indexOf(label);
-    if (index !== -1){
+    if (index !== -1) {
       console.log("makan");
       dataColleger.nilai.splice(index, 1);
     } else {
@@ -104,20 +129,21 @@ const MainSection = () => {
     dataColleger.nilai.sort();
     console.log(dataColleger.nilai);
 
-    if (dataColleger.nilai.length !== 0){
+    if (dataColleger.nilai.length !== 0) {
       setCheckRequired(false);
       return;
-    } 
-    
+    }
+
     setCheckRequired(true);
-    
+
   }
 
   return (
     <section className="main-section">
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <FormInput >NIM</FormInput>
-        <FormInput >Password</FormInput>
+      <h2>Semester </h2>
+      <Form noValidate validated={validated} onSubmit={handleSubmit} >
+        <FormInput hidden="text">NIM</FormInput>
+        <FormInput hidden="password" >Password</FormInput>
         <Form.Label>Nilai Kuesioner</Form.Label>
         <Form.Group className="mb-3" controlId="basicFormCheckbox">
           {['1', '2', '3', '4', '5'].map((label) => <FormCheckButton
@@ -133,6 +159,7 @@ const MainSection = () => {
         </Form.Group>
         <Button variant="primary" type="submit">Mulai</Button>
       </Form>
+      <div>{dataCollegers}</div>
     </section>
   );
 }
@@ -142,7 +169,7 @@ const FormInput = (props: Props) => {
   return (
     <Form.Group className="mb-3" controlId={`basicForm${props.children}`}>
       <Form.Label>{props.children}</Form.Label>
-      <Form.Control required type="text" placeholder={`Masukkan ${props.children}`} />
+      <Form.Control name="password"required type={props.hidden} placeholder={`Masukkan ${props.children}`} />
     </Form.Group>
   );
 }
