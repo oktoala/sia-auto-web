@@ -1,8 +1,9 @@
 import { Button, Form } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck';
-import {ReactComponent as GithubIcon} from './icons/github.svg';
-import {ReactComponent as UnmulIcon} from './icons/unmul.svg';
+import { ReactComponent as GithubIcon } from './icons/github.svg';
+import { ReactComponent as UnmulIcon } from './icons/unmul.svg';
+import { ReactComponent as LogoIcon } from './icons/logo.svg';
 
 interface Props {
   children?: React.ReactNode;
@@ -10,13 +11,14 @@ interface Props {
   label?: string;
   required?: boolean;
   hidden?: string;
+  href?: string;
   onClick?: React.MouseEventHandler<HTMLInputElement> | undefined;
 }
 
 interface DataColleger {
   nim: string;
   password: string;
-  semester: string | undefined;
+  semId: string | undefined;
   nilai: (string | undefined)[];
   cobaDulu: boolean;
 }
@@ -25,7 +27,7 @@ const dataColleger: DataColleger = {
   nim: "",
   password: "",
   nilai: [],
-  semester: "",
+  semId: "",
   cobaDulu: false
 }
 
@@ -47,7 +49,7 @@ const Header = () => {
         <div className="logo">
           <a className="logo" href="/">
             <div className="logo_image">
-              <UnmulIcon />
+              <LogoIcon height="50px" />
             </div>
             <div className="logo_title">
               <span>SIAuto</span>
@@ -55,16 +57,27 @@ const Header = () => {
           </a>
         </div>
         <div className="menu">
-          <Button variant="light" className="menu">
-            <a target="_blank" rel="noreferrer" href="https://github.com/oktoala/sia-auto-web">
-              <GithubIcon height="25px" />
-              <span>Star</span>
-            </a>
-          </Button>
+          <ButtonMenu href="sia.unmul.ac.id/home" label="SIA"  >
+            <UnmulIcon height="25px" />
+          </ButtonMenu>
+          <ButtonMenu href="github.com/oktoala/sia-auto-web" label="Star"  >
+            <GithubIcon height="25px" />
+          </ButtonMenu>
         </div>
       </div>
     </header>
   );
+}
+
+const ButtonMenu = (props: Props) => {
+  return (
+    <Button variant="light" >
+      <a href={`https://${props.href}`} target="_blank" rel="noopener noreferrer">
+        {props.children}
+        <span>{props.label}</span>
+      </a>
+    </Button>
+  )
 }
 
 const Main = (props: Props) => {
@@ -75,21 +88,46 @@ const Main = (props: Props) => {
   );
 }
 
+
+
 const MainSection = () => {
 
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
-  const [dataCollegers, setDataCollegers] = useState([]);
+  const [semester, setSemester] = useState("");
+  // const [genap, setGenap] = useState(true);
+  const tahun_ajar = `${curr_year()}/${curr_year() + 1}`;
 
-  const semester = () => {
-    
+  function curr_year() {
+    const today = new Date();
+    // let notGetMonth = true;
+    const monthGanjil = ["8", "9", "10", "11", "12"];
+    const january = "1";
+    const monthGenap = ["2", "3", "4", "5", "6", "7"];
+
+    // Get year
+    const year = today.getFullYear();
+
+    // Get month
+    const month = (today.getMonth() + 1).toString();
+    let curr_year = year;
+
+    if (month === january) {
+      curr_year = (year - 1);
+    } else if (monthGanjil.includes(month)) {
+      curr_year = year;
+    } else if (monthGenap.includes(month)) {
+      curr_year = (year - 1);
+    }
+
+    return curr_year;
   }
-  
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();
+
     if (form.checkValidity() === false) {
       console.log("False");
     } else {
@@ -106,12 +144,9 @@ const MainSection = () => {
 
       console.log(data);
 
-      
-
-      console.log(dataColleger);
     }
+    console.log(dataColleger);
     setValidated(true);
-
 
   }
 
@@ -140,7 +175,7 @@ const MainSection = () => {
 
   return (
     <section className="main-section">
-      <h2>Semester </h2>
+      <h3>{`Semester ${tahun_ajar} ${semester}`}</h3>
       <Form noValidate validated={validated} onSubmit={handleSubmit} >
         <FormInput hidden="text">NIM</FormInput>
         <FormInput hidden="password" >Password</FormInput>
@@ -151,15 +186,23 @@ const MainSection = () => {
         </Form.Group>
         <Form.Label>Semester</Form.Label>
         <Form.Group className="mb-3" controlId="basicFormRadio">
-          {['Ganjil', 'Genap'].map((label) => <FormCheckButton
-            onClick={() => dataColleger.semester = label} required type="radio" label={label} />)}
+          {[{
+            nama: 'Ganjil',
+            id: '1'
+          }, {
+            nama: 'Genap',
+            id: '2'
+          }].map((label) => <FormCheckButton
+            onClick={() => {
+              dataColleger.semId = curr_year() + label.id;
+              setSemester(label.nama)
+            }} required type="radio" label={label.nama} />)}
         </Form.Group>
         <Form.Group className="mb-3" controlId="basicFormTrust">
           <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi Setengah Dulu" />
         </Form.Group>
         <Button variant="primary" type="submit">Mulai</Button>
       </Form>
-      <div>{dataCollegers}</div>
     </section>
   );
 }
@@ -169,7 +212,7 @@ const FormInput = (props: Props) => {
   return (
     <Form.Group className="mb-3" controlId={`basicForm${props.children}`}>
       <Form.Label>{props.children}</Form.Label>
-      <Form.Control name="password"required type={props.hidden} placeholder={`Masukkan ${props.children}`} />
+      <Form.Control name="password" required type={props.hidden} placeholder={`Masukkan ${props.children}`} />
     </Form.Group>
   );
 }

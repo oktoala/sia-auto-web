@@ -2,17 +2,18 @@
 const functions = require("firebase-functions");
 const { user } = require("firebase-functions/v1/auth");
 const cors = require('cors')({ origin: true });
+const puppeteer = require('puppeteer');
 exports.scraper = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {
-        const body = request.body;
-        console.log(typeof body.text);
-        const text = body;
+        const text = JSON.parse(request.body);
+        // console.log(typeof body.text);
+        console.log(text);
         // const text = encodeURIComponent(body.text.trim());
         const data = await scrapeImages(text);
+        console.log(`Send this ${data}`);
         response.send(data);
     });
 });
-const puppeteer = require('puppeteer');
 const scrapeImages = async (mahasiswa) => {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
@@ -42,13 +43,14 @@ const scrapeImages = async (mahasiswa) => {
         visible: true
     }).then(() => console.log("Dapat Lagi"));
     const data = await page.evaluate(() => {
-        const nama = document.querySelector('h5').innerHTML;
+        const nama = (document.querySelectorAll('div'));
+        const url = Array.from(nama).map(v => v.className);
         // const urls = Array.from(images).map(v => v.src);
-        return nama;
+        return url;
     });
     await page.screenshot({ path: '4.png' });
     await browser.close();
-    console.log(data);
+    // console.log(data);
     return data;
 };
 //# sourceMappingURL=index.js.map
