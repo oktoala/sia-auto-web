@@ -17,24 +17,30 @@ exports.scraper = functions.https.onRequest((request: any, response: any) => {
         const text = JSON.parse(request.body);
         console.log(text);
 
-        // const text = encodeURIComponent(body.text.trim());
-
         const data = await scrapeImages(text);
 
         console.log(`Send this ${data}`);
         response.send(data);
-    })
+    });
 })
 
 
 const scrapeImages = async (mahasiswa: DataColleger) => {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({
+        headless: false,
+        args: ["--enable-features=NetworkService", "--no-sandbox"],
+        ignoreHTTPSErrors: true
+    });
     const page = await browser.newPage();
 
     await page.goto('https://sia.unmul.ac.id/login');
 
     // ! Login Page
 
+    await page.waitForSelector('input[name=usr]', {
+        visible: true,
+    })
+        .then(() => console.log('Dapat Input Login'));
 
     await page.type('input[name=usr]', mahasiswa.nim);
 
@@ -48,7 +54,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     await page.click('button[type=submit]');
 
-    
+
     // ? Home Page
 
     await page.waitForSelector('h2', {
@@ -58,45 +64,45 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
     await page.evaluate(() => {
         // Kartu Hasil Studi
         (document.querySelector('li:nth-child(4) > ul > li > a') as HTMLElement).click();
-    })
+    });
 
     // ! KHS Page
 
     await page.waitForSelector('h5', {
         visible: true
-    }).then(() => console.log('Udah di Halaman KHS'));
-
-    await page.evaluate(async (semId: string) => {
-
-        await new Promise(() => {
-
-            const http = new XMLHttpRequest();
-
-            http.onreadystatechange = function () {
-                if (http.readyState == XMLHttpRequest.DONE) {
-                    if (http.status == 200) {
-                        (document.querySelector('#response') as HTMLElement).innerHTML = http.responseText;
-                        console.log('hahah');
-                    }
-                }
-            }
-
-            http.open('POST', '/pmhskhs/loaddatas', true);
-            http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-            http.send(`semId=${semId}`);
-
-        })
-
-    }, mahasiswa.semId);
-
-    const data = await page.evaluate(() => {
-        return document.querySelectorAll('#response a');
     });
 
-    console.log(data[0]);
+    const semId = mahasiswa.semId;
 
-    await browser.close();
+    await page.waitForResponse((semId: string) => {
+                    console.log('wkwkwk');
+                    const http = new XMLHttpRequest();
+            
+                    http.onreadystatechange = function () {
+                        if (http.readyState == XMLHttpRequest.DONE) {
+                            if (http.status == 200) {
+                                (document.querySelector('#response') as HTMLElement).innerHTML = http.responseText;
+                                console.log('hahah');
+                            }else {
+                                console.log('heheh');
+                            }
+                        }
+                    }
+            
+                    http.open('POST', '/pmhskhs/loaddatas', true);
+                    http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+                    http.send(`semId=${semId}`);
+            
+                    const hrefs = document.querySelectorAll('#response a');
+            
+                    console.log(hrefs[0]);
 
-    return data;
+    }, semId);
+
+    console.log("Gerrr");
+
+    // await browser.close();
+
+
 
 }
