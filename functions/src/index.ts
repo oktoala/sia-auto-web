@@ -7,7 +7,7 @@ const puppeteer = require('puppeteer');
 interface DataColleger {
     nim: string;
     password: string;
-    semester: string | undefined;
+    semId: string | undefined;
     nilai: (string | undefined)[];
     cobaDulu: boolean;
 }
@@ -28,7 +28,7 @@ exports.scraper = functions.https.onRequest((request: any, response: any) => {
 
 
 const scrapeImages = async (mahasiswa: DataColleger) => {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
     await page.goto('https://sia.unmul.ac.id/login');
@@ -48,7 +48,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     await page.click('button[type=submit]');
 
-
+    
     // ? Home Page
 
     await page.waitForSelector('h2', {
@@ -64,16 +64,36 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     await page.waitForSelector('h5', {
         visible: true
-    });
+    }).then(() => console.log('Udah di Halaman KHS'));
+
+    await page.evaluate(async (semId: string) => {
+
+        await new Promise(() => {
+
+            const http = new XMLHttpRequest();
+
+            http.onreadystatechange = function () {
+                if (http.readyState == XMLHttpRequest.DONE) {
+                    if (http.status == 200) {
+                        (document.querySelector('#response') as HTMLElement).innerHTML = http.responseText;
+                        console.log('hahah');
+                    }
+                }
+            }
+
+            http.open('POST', '/pmhskhs/loaddatas', true);
+            http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+            http.send(`semId=${semId}`);
+
+        })
+
+    }, mahasiswa.semId);
 
     const data = await page.evaluate(() => {
-
-        const nama = (document.querySelectorAll('div'));
-
-        const url = Array.from(nama).map(v => v.className);
-
-        return url;
+        return document.querySelectorAll('#response a');
     });
+
+    console.log(data[0]);
 
     await browser.close();
 
