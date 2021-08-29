@@ -28,8 +28,6 @@ exports.scraper = functions.https.onRequest((request: any, response: any) => {
 const scrapeImages = async (mahasiswa: DataColleger) => {
     const browser = await puppeteer.launch({
         headless: false,
-        args: ["--enable-features=NetworkService", "--no-sandbox"],
-        ignoreHTTPSErrors: true
     });
     const page = await browser.newPage();
 
@@ -39,8 +37,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     await page.waitForSelector('input[name=usr]', {
         visible: true,
-    })
-        .then(() => console.log('Dapat Input Login'));
+    }).then(() => console.log('Dapat Input Login'));
 
     await page.type('input[name=usr]', mahasiswa.nim);
 
@@ -74,30 +71,46 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     const semId = mahasiswa.semId;
 
-    await page.waitForResponse((semId: string) => {
-                    console.log('wkwkwk');
-                    const http = new XMLHttpRequest();
-            
-                    http.onreadystatechange = function () {
-                        if (http.readyState == XMLHttpRequest.DONE) {
-                            if (http.status == 200) {
-                                (document.querySelector('#response') as HTMLElement).innerHTML = http.responseText;
-                                console.log('hahah');
-                            }else {
-                                console.log('heheh');
-                            }
-                        }
-                    }
-            
-                    http.open('POST', '/pmhskhs/loaddatas', true);
-                    http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-                    http.send(`semId=${semId}`);
-            
-                    const hrefs = document.querySelectorAll('#response a');
-            
-                    console.log(hrefs[0]);
+    await page.evaluate((semId: string) => {
+        console.log('wkwkwk');
+        const http = new XMLHttpRequest();
 
+        http.onreadystatechange = () => {
+            if (http.readyState == XMLHttpRequest.DONE) {
+                if (http.status == 200) {
+                    (document.querySelector('#response') as HTMLElement).innerHTML = http.responseText;
+                    console.log('hahah');
+                } else {
+                    console.log('heheh');
+                }
+            }
+        }
+
+        http.open('POST', '/pmhskhs/loaddatas', true);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+        http.send(`semId=${semId}`);
+        
     }, semId);
+
+    await page.waitForSelector('#response a', {
+        visible: true,
+    }).then(() => console.log('Dapat Link'));
+    
+
+    const data = await page.evaluate(() => {
+        const hrefs = document.querySelectorAll('#response a');
+
+        const href = Array.from(hrefs).map(v => v.getAttribute('href'));
+
+        console.log(`hrefs ${hrefs}`);
+        console.log(href);
+
+        return href;
+    });
+
+    await page.goto(data[0]);
+
+    console.log(data);
 
     console.log("Gerrr");
 
