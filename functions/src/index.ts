@@ -71,6 +71,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     const semId = mahasiswa.semId;
 
+    // Send Request according to semester id
     await page.evaluate((semId: string) => {
         console.log('wkwkwk');
         const http = new XMLHttpRequest();
@@ -78,7 +79,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
         http.onreadystatechange = () => {
             if (http.readyState == XMLHttpRequest.DONE) {
                 if (http.status == 200) {
-                    (document.querySelector('#response') as HTMLElement).innerHTML = http.responseText;
+                    (document.querySelector('#response') as HTMLElement).innerHTML = http.response;
                     console.log('hahah');
                 } else {
                     console.log('heheh');
@@ -92,10 +93,13 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
         
     }, semId);
 
+    // Wait for link has been visible
+
     await page.waitForSelector('#response a', {
         visible: true,
     }).then(() => console.log('Dapat Link'));
     
+    // Get All the link to array
 
     const data = await page.evaluate(() => {
         const hrefs = document.querySelectorAll('#response a');
@@ -108,9 +112,48 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
         return href;
     });
 
-    await page.goto(data[0]);
+    // Execute every kuesioner
 
-    console.log(data);
+    for await (const link of data) {
+        const pageKHS = await browser.newPage();
+        await pageKHS.goto(link);
+
+        await pageKHS.waitForSelector('#sipform > div > ul > li > a', {
+            visible: true
+        }).then(() => console.log('Udah di kuesioner'));
+
+
+        // Get All tabs (ex: Kesiapan Mengajar, Materi Pengajaran, ...)
+        const tabs = await pageKHS.evaluate(() => {
+            const tabs = document.querySelectorAll('#sipform > div > ul > li > a');
+
+            const tabArray = Array.from(tabs).map(v => v.getAttribute('href'));
+
+            console.log(tabArray);
+
+            return tabArray;
+        });
+
+        // Looping trough the tab
+        for await (const tab of tabs) {
+            console.log(tab);
+            await pageKHS.click(`a[href="${tab}"]`);
+
+            const radioBtns = await pageKHS.evaluate(() => {
+                const btns = document.querySelectorAll(`${tab} tbody tr`);
+
+                const btnArray = Array.from(btns);
+
+                return btnArray;
+            });
+
+            for await (const radioBtn of radioBtns) {
+                
+            }
+            
+        }
+
+    }
 
     console.log("Gerrr");
 
