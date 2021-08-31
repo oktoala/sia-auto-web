@@ -90,7 +90,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
         http.open('POST', '/pmhskhs/loaddatas', true);
         http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
         http.send(`semId=${semId}`);
-        
+
     }, semId);
 
     // Wait for link has been visible
@@ -98,7 +98,7 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
     await page.waitForSelector('#response a', {
         visible: true,
     }).then(() => console.log('Dapat Link'));
-    
+
     // Get All the link to array
 
     const data = await page.evaluate(() => {
@@ -114,46 +114,65 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     // Execute every kuesioner
 
-    for await (const link of data) {
-        const pageKHS = await browser.newPage();
-        await pageKHS.goto(link);
+    // for await (const link of data) {
+    const pageKHS = await browser.newPage();
+    await pageKHS.goto(data[0]);
 
-        await pageKHS.waitForSelector('#sipform > div > ul > li > a', {
-            visible: true
-        }).then(() => console.log('Udah di kuesioner'));
+    await pageKHS.waitForSelector('#sipform > div > ul > li > a', {
+        visible: true
+    }).then(() => console.log('Udah di kuesioner'));
 
 
-        // Get All tabs (ex: Kesiapan Mengajar, Materi Pengajaran, ...)
-        const tabs = await pageKHS.evaluate(() => {
-            const tabs = document.querySelectorAll('#sipform > div > ul > li > a');
+    // Get All tabs (ex: Kesiapan Mengajar, Materi Pengajaran, ...)
+    const tabs = await pageKHS.evaluate(() => {
+        const tabs = document.querySelectorAll('#sipform > div > ul > li > a');
 
-            const tabArray = Array.from(tabs).map(v => v.getAttribute('href'));
+        const tabArray = Array.from(tabs).map(v => v.getAttribute('href'));
 
-            console.log(tabArray);
+        console.log(tabArray);
 
-            return tabArray;
-        });
+        return tabArray;
+    });
 
-        // Looping trough the tab
-        for await (const tab of tabs) {
-            console.log(tab);
-            await pageKHS.click(`a[href="${tab}"]`);
+    // Looping trough the tab
+    for await (const tab of tabs) {
 
-            const radioBtns = await pageKHS.evaluate(() => {
-                const btns = document.querySelectorAll(`${tab} tbody tr`);
+        if (tab == "#tabs0") continue;
 
-                const btnArray = Array.from(btns);
+        await pageKHS.click(`a[href="${tab}"]`);
 
-                return btnArray;
-            });
+        // Get all kuesioner in every tabs
+        const kuesioners = await pageKHS.evaluate((tab: any) => {
 
-            for await (const radioBtn of radioBtns) {
-                
-            }
+            (document.querySelector(`a[href="${tab}"]`) as HTMLElement).click();
+
+            // const kuesioners = document.querySelectorAll(`${tab} tbody tr td:first-child`);
+            const kuesioners = document.querySelectorAll('.tab-pane tbody tr');
+
+            const kuesionerArray = Array.from(kuesioners);
+
+            return kuesionerArray;
+        }, tab);
+
+        let jawab = 1;
+        for await (const index of kuesioners) {
+
+            console.log(index);
+
+            const randomNumber = mahasiswa.nilai[Math.floor(Math.random() * mahasiswa.nilai.length)];
+            console.log(randomNumber);
+            console.log(`index: ${jawab}`);
+
+            await pageKHS.evaluate((jawab: number, randomNumber: string | undefined) => {
+                (document.querySelector(`input[value="${randomNumber}"][name="jawab[${jawab}]"]`) as HTMLInputElement).checked = true;
+
+            }, jawab, randomNumber).then(() => jawab++);
             
         }
 
     }
+
+    // }
 
     console.log("Gerrr");
 
