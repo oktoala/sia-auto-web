@@ -141,7 +141,7 @@ const MainSection = () => {
         body: JSON.stringify(dataColleger)
       });
 
-      const data = await response.json().then(data => setResponse({response: data.response}));
+      await response.json().then(data => setResponse({response: data.response}));
 
       
     }
