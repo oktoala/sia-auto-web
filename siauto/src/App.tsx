@@ -95,12 +95,13 @@ const MainSection = () => {
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
   const [semester, setSemester] = useState("");
-  // const [genap, setGenap] = useState(true);
+  const [response, setResponse] = useState({ 
+    response: "ga" });
   const tahun_ajar = `${curr_year()}/${curr_year() + 1}`;
+
 
   function curr_year() {
     const today = new Date();
-    // let notGetMonth = true;
     const monthGanjil = ["8", "9", "10", "11", "12"];
     const january = "1";
     const monthGenap = ["2", "3", "4", "5", "6", "7"];
@@ -140,10 +141,9 @@ const MainSection = () => {
         body: JSON.stringify(dataColleger)
       });
 
-      const data = await response.json();
+      const data = await response.json().then(data => setResponse({response: data.response}));
 
-      console.log(data);
-
+      
     }
     console.log(dataColleger);
     setValidated(true);
@@ -203,6 +203,7 @@ const MainSection = () => {
         </Form.Group>
         <Button variant="primary" type="submit">Mulai</Button>
       </Form>
+      <p>h {response.response} </p>
     </section>
   );
 }

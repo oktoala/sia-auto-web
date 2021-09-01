@@ -142,31 +142,29 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
         await pageKHS.click(`a[href="${tab}"]`);
 
         // Get all kuesioner in every tabs
-        const kuesioners = await pageKHS.evaluate((tab: any) => {
+        const names = await pageKHS.evaluate((tab: any) => {
 
             (document.querySelector(`a[href="${tab}"]`) as HTMLElement).click();
 
             // const kuesioners = document.querySelectorAll(`${tab} tbody tr td:first-child`);
-            const kuesioners = document.querySelectorAll('.tab-pane tbody tr');
+            const kuesioners = document.querySelectorAll('tbody tr td:last-child input');
 
-            const kuesionerArray = Array.from(kuesioners);
+            const kuesionerArray = Array.from(kuesioners).map(v => v.getAttribute('name'));
 
             return kuesionerArray;
         }, tab);
 
-        let jawab = 1;
-        for await (const index of kuesioners) {
+        for await (const name of names) {
 
-            console.log(index);
+            console.log(name);
 
             const randomNumber = mahasiswa.nilai[Math.floor(Math.random() * mahasiswa.nilai.length)];
             console.log(randomNumber);
-            console.log(`index: ${jawab}`);
 
-            await pageKHS.evaluate((jawab: number, randomNumber: string | undefined) => {
-                (document.querySelector(`input[value="${randomNumber}"][name="jawab[${jawab}]"]`) as HTMLInputElement).checked = true;
+            await pageKHS.evaluate((name: any, randomNumber: string | undefined) => {
+                (document.querySelector(`input[value="${randomNumber}"][name="${name}"`) as HTMLInputElement).checked = true;
 
-            }, jawab, randomNumber).then(() => jawab++);
+            }, name, randomNumber);
             
         }
 
@@ -178,6 +176,6 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     // await browser.close();
 
-
+    return {response: "makan"};
 
 }
