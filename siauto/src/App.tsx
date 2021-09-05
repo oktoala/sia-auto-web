@@ -1,4 +1,4 @@
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Alert } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck';
 import { ReactComponent as GithubIcon } from './icons/github.svg';
@@ -77,7 +77,7 @@ const ButtonMenu = (props: Props) => {
         <span>{props.label}</span>
       </a>
     </Button>
-  )
+  );
 }
 
 const Main = (props: Props) => {
@@ -95,8 +95,8 @@ const MainSection = () => {
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
   const [semester, setSemester] = useState("");
-  const [response, setResponse] = useState({ 
-    response: "ga" });
+  const [response, setResponse] = useState({ response: "ga", variantAlert: 'primary' });
+  const [showAlert, setShowAlert] = useState(false);
   const tahun_ajar = `${curr_year()}/${curr_year() + 1}`;
 
 
@@ -133,6 +133,8 @@ const MainSection = () => {
       console.log("False");
     } else {
       console.log("True");
+      setResponse({response: "Tunggu Sebentar", variantAlert: "primary"});
+      setShowAlert(true);
       dataColleger.nim = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
       dataColleger.password = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
 
@@ -141,9 +143,9 @@ const MainSection = () => {
         body: JSON.stringify(dataColleger)
       });
 
-      await response.json().then(data => setResponse({response: data.response}));
+      await response.json().then(data => setResponse({ response: data.response, variantAlert: data.variantAlert }));
 
-      
+
     }
     console.log(dataColleger);
     setValidated(true);
@@ -176,7 +178,7 @@ const MainSection = () => {
   return (
     <section className="main-section">
       <h3>{`Semester ${tahun_ajar} ${semester}`}</h3>
-      <Form noValidate validated={validated} onSubmit={handleSubmit} >
+      <Form className="mb-4" noValidate validated={validated} onSubmit={handleSubmit} >
         <FormInput hidden="text">NIM</FormInput>
         <FormInput hidden="password" >Password</FormInput>
         <Form.Label>Nilai Kuesioner</Form.Label>
@@ -199,11 +201,11 @@ const MainSection = () => {
             }} required type="radio" label={label.nama} />)}
         </Form.Group>
         <Form.Group className="mb-3" controlId="basicFormTrust">
-          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi Setengah Dulu" />
+          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi satu dulu" />
         </Form.Group>
         <Button variant="primary" type="submit">Mulai</Button>
       </Form>
-      <p>h {response.response} </p>
+      <Alert hidden={!showAlert} onClose={() => setShowAlert(false)} dismissible variant={response.variantAlert} className="mt-">{response.response}</Alert>
     </section>
   );
 }

@@ -49,14 +49,15 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
     await page.type('input[name=sc]', securityCode);
 
-    await page.click('button[type=submit]');
-
+    await page.click('button[type=submit]')
 
     // ? Home Page
 
     await page.waitForSelector('h2', {
         visible: true
-    }).then(() => console.log("Dapat KHS"));
+    }).then(() => console.log("Dapat KHS"))
+    .catch((error: any)=> console.log(error));
+
 
     await page.evaluate(() => {
         // Kartu Hasil Studi
@@ -139,6 +140,8 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
             if (tab == "#tabs0") continue;
 
+            console.log(tab);
+
             await pageKHS.click(`a[href="${tab}"]`);
 
             // Get all kuesioner in every tabs
@@ -153,18 +156,21 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
                 return kuesionerArray;
             }, tab);
+            
+            console.log(names);
+            //* Check Radio button with random number from array nilai 
+            //* Comment loop below to test submit button button
+            // for await (const name of names) {
 
-            for await (const name of names) {
+            //     const randomNumber = mahasiswa.nilai[Math.floor(Math.random() * mahasiswa.nilai.length)];
+            //     console.log(randomNumber);
 
-                const randomNumber = mahasiswa.nilai[Math.floor(Math.random() * mahasiswa.nilai.length)];
-                console.log(randomNumber);
+            //     await pageKHS.evaluate((name: any, randomNumber: string | undefined) => {
+            //         (document.querySelector(`input[value="${randomNumber}"][name="${name}"`) as HTMLInputElement).checked = true;
 
-                await pageKHS.evaluate((name: any, randomNumber: string | undefined) => {
-                    (document.querySelector(`input[value="${randomNumber}"][name="${name}"`) as HTMLInputElement).checked = true;
+            //     }, name, randomNumber);
 
-                }, name, randomNumber);
-
-            }
+            // }
         }
 
         if (mahasiswa.cobaDulu){
