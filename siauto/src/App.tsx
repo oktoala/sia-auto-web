@@ -97,6 +97,7 @@ const MainSection = () => {
   const [semester, setSemester] = useState("");
   const [response, setResponse] = useState({ response: "ga", variantAlert: 'primary' });
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
   const tahun_ajar = `${curr_year()}/${curr_year() + 1}`;
 
 
@@ -133,8 +134,9 @@ const MainSection = () => {
       console.log("False");
     } else {
       console.log("True");
-      setResponse({response: "Tunggu Sebentar", variantAlert: "primary"});
+      setResponse({ response: "Tunggu Sebentar", variantAlert: "primary" });
       setShowAlert(true);
+      setLoading(true);
       dataColleger.nim = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
       dataColleger.password = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
 
@@ -143,9 +145,9 @@ const MainSection = () => {
         body: JSON.stringify(dataColleger)
       });
 
-      await response.json().then(data => setResponse({ response: data.response, variantAlert: data.variantAlert }));
-
-
+      const data = await response.json();
+      setLoading(false);
+      setResponse({ response: data.response, variantAlert: data.variantAlert });
     }
     console.log(dataColleger);
     setValidated(true);
@@ -178,7 +180,7 @@ const MainSection = () => {
   return (
     <section className="main-section">
       <h3>{`Semester ${tahun_ajar} ${semester}`}</h3>
-      <Form className="mb-4" noValidate validated={validated} onSubmit={handleSubmit} >
+      <Form className="mb-4" onSubmit={handleSubmit} >
         <FormInput hidden="text">NIM</FormInput>
         <FormInput hidden="password" >Password</FormInput>
         <Form.Label>Nilai Kuesioner</Form.Label>
@@ -203,9 +205,9 @@ const MainSection = () => {
         <Form.Group className="mb-3" controlId="basicFormTrust">
           <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi satu dulu" />
         </Form.Group>
-        <Button variant="primary" type="submit">Mulai</Button>
+        <Button variant="primary" disabled={loading} type="submit">Mulai</Button>
       </Form>
-      <Alert hidden={!showAlert} onClose={() => setShowAlert(false)} dismissible variant={response.variantAlert} className="mt-">{response.response}</Alert>
+      <Alert hidden={!showAlert} onClose={() => setShowAlert(false)} dismissible={!loading} variant={response.variantAlert} className="mt-">{response.response}</Alert>
     </section>
   );
 }
