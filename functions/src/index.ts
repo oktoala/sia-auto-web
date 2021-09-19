@@ -12,9 +12,15 @@ interface DataColleger {
     cobaDulu: boolean;
 }
 
-exports.scraper = functions.https.onRequest((request: any, response: any) => {
+exports.scraper = functions
+.runWith({
+    timeoutSeconds: 300,
+})
+.https.onRequest((request: any, response: any) => {
     cors(request, response, async () => {
+        console.log(typeof request.body);
         const text = JSON.parse(request.body);
+        // const text = request.body;
         console.log(text);
 
         const data = await scrapeImages(text);
@@ -22,18 +28,18 @@ exports.scraper = functions.https.onRequest((request: any, response: any) => {
         console.log(`Send this ${data}`);
         response.send(data);
     });
-})
+});
 
 
 const scrapeImages = async (mahasiswa: DataColleger) => {
 
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true
     });
     const page = await browser.newPage();
 
-    await page.goto('https://sia.unmul.ac.id/login');
     try {
+        await page.goto('https://sia.unmul.ac.id/login', {waituntil: 'load',timeout: 100000});
         // ! Login Page
 
         await page.waitForSelector('input[name=usr]', {
@@ -54,11 +60,15 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
         await page.click('button[type=submit]');
 
         // ? Home Page
+        try {
+            await page.waitForSelector('h2', {
+                visible: true,
+                timeout: 5000
+            }).then(() => console.log("Dapat KHS"))
 
-        await page.waitForSelector('h2', {
-            visible: true
-        }).then(() => console.log("Dapat KHS"));
-
+        } catch (error) {
+            return { response: "NIM dan Password tidak cocok. Silahkan coba lagi", variantAlert: "danger" };
+        }
 
         await page.evaluate(() => {
             // Kartu Hasil Studi
@@ -124,7 +134,6 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
                 visible: true
             }).then(() => console.log('Udah di kuesioner'));
 
-
             // Get All tabs (ex: Kesiapan Mengajar, Materi Pengajaran, ...)
             const tabs = await pageKHS.evaluate(() => {
                 const tabs = document.querySelectorAll('#sipform > div > ul > li > a');
@@ -139,7 +148,6 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
                 if (tab === "#tabs0") continue;
 
-
                 await pageKHS.click(`a[href="${tab}"]`);
 
                 // Get all kuesioner in every tabs
@@ -153,11 +161,13 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
                     return kuesionerArray;
                 }, tab);
+                
+                // ! Comment this line if youre ready
                 if (tab === "#tabs8") {
                     console.log('tabs8');
-                    await pageKHS.type("textarea", "--");
+                    await pageKHS.type("textarea", "✌️");
                     await pageKHS.evaluate(() => {
-                        (document.querySelector('#submit')as HTMLElement).click();
+                        (document.querySelector('#submit') as HTMLElement).click();
                     })
                     continue;
                 }
@@ -183,14 +193,14 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
             }
         }
 
-        // await browser.close();
+        await browser.close();
 
         return { response: "Berhasil!! Kuesioner Telah diisi 🎉🎉", variantAlert: "success" };
     } catch (e) {
         console.log(`e: ${e}, e.name: ${e.name}`);
-        if (e.name == "TimeoutError"){
+        if (e.name == "TypeError") {
             return { response: "NIM dan Password tidak cocok. Silahkan coba lagi.", variantAlert: "danger" };
-        } 
-        return { response: "Terjadi kesalahan, silahkan coba lagi ", variantAlert: "danger" };
+        }
+        return { response: "❌Terlalu Lama untuk Request. Mungkin jaringan anda bermasalah. Silahkan Coba lagi ", variantAlert: "danger" };
     }
 }

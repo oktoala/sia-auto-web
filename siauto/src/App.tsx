@@ -13,6 +13,7 @@ interface Props {
   required?: boolean;
   hidden?: string;
   href?: string;
+  placeholder?: string;
   onClick?: React.MouseEventHandler<HTMLInputElement> | undefined;
 }
 
@@ -93,7 +94,6 @@ const Main = (props: Props) => {
 
 const MainSection = () => {
 
-  const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
   const [semester, setSemester] = useState("");
   const [response, setResponse] = useState({ response: "ga", variantAlert: 'secondary' });
@@ -150,7 +150,6 @@ const MainSection = () => {
       setResponse({ response: data.response, variantAlert: data.variantAlert });
     }
     console.log(dataColleger);
-    setValidated(true);
 
   }
 
@@ -181,8 +180,8 @@ const MainSection = () => {
     <section className="main-section">
       <h3>{`Semester ${tahun_ajar} ${semester}`}</h3>
       <Form className="mb-4" onSubmit={handleSubmit} >
-        <FormInput hidden="text">NIM</FormInput>
-        <FormInput hidden="password" >Password</FormInput>
+        <FormInput placeholder="Masukkan NIM" hidden="text">NIM</FormInput>
+        <FormInput placeholder="Masukkan Password" hidden="password">Password</FormInput>
         <Form.Label>Nilai Kuesioner <TipsText>Nilai-nilai yang dipilih akan dirandom saat pengisian kuesioner</TipsText> </Form.Label>
         <Form.Group className="mb-3" controlId="basicFormCheckbox">
           {['1', '2', '3', '4', '5'].map((label) => <FormCheckButton
@@ -203,21 +202,23 @@ const MainSection = () => {
             }} required type="radio" label={label.nama} />)}
         </Form.Group>
         <Form.Group className="mb-3" controlId="basicFormTrust">
-          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi satu dulu"/>
+          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi satu dulu" />
         </Form.Group>
         <Button variant="primary" disabled={loading} type="submit">Mulai</Button>
       </Form>
-      <Alert hidden={!showAlert} onClose={() => setShowAlert(false)} dismissible={!loading} variant={response.variantAlert} className="mt-">{response.response}</Alert>
+      <Alert hidden={!showAlert} onClose={() => setShowAlert(false)} dismissible={!loading} variant={response.variantAlert} className="mt-4">{response.response}</Alert>
     </section>
   );
 }
+
+// ! COMPONENT
 
 /* Form Input */
 const FormInput = (props: Props) => {
   return (
     <Form.Group className="mb-3" controlId={`basicForm${props.children}`}>
       <Form.Label>{props.children}</Form.Label>
-      <Form.Control name="password" required type={props.hidden} placeholder={`Masukkan ${props.children}`} />
+      <Form.Control name="password" required type={props.hidden} placeholder={props.placeholder} />
     </Form.Group>
   );
 }
@@ -237,7 +238,7 @@ const TipsText = (props: Props) => {
         {props.children}
       </Tooltip>
     }>
-      <span><QuestionIcon height="15"/></span>
+      <span><QuestionIcon height="15" /></span>
     </OverlayTrigger>
   )
 }
