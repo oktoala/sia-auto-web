@@ -131,15 +131,12 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
 
                 const tabArray = Array.from(tabs).map(v => v.getAttribute('href'));
 
-                console.log(tabArray);
-
                 return tabArray;
             });
 
             // Looping trough the tab
             for await (const tab of tabs) {
 
-                console.log(tab);
                 if (tab === "#tabs0") continue;
 
 
@@ -157,8 +154,12 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
                     return kuesionerArray;
                 }, tab);
                 if (tab === "#tabs8") {
-                    await pageKHS.type("textarea", "  ");
-                    await pageKHS.click('#submit');
+                    console.log('tabs8');
+                    await pageKHS.type("textarea", "--");
+                    await pageKHS.evaluate(() => {
+                        (document.querySelector('#submit')as HTMLElement).click();
+                    })
+                    continue;
                 }
 
                 console.log(typeof names);
@@ -182,11 +183,9 @@ const scrapeImages = async (mahasiswa: DataColleger) => {
             }
         }
 
-        console.log("Gerrr");
-
         // await browser.close();
 
-        return { response: "Berhasil!! Kuesioner Telah diisi", variantAlert: "success" };
+        return { response: "Berhasil!! Kuesioner Telah diisi 🎉🎉", variantAlert: "success" };
     } catch (e) {
         console.log(`e: ${e}, e.name: ${e.name}`);
         if (e.name == "TimeoutError"){

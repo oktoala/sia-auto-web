@@ -1,9 +1,10 @@
-import { Button, Form, Alert } from 'react-bootstrap';
+import { Button, Form, Alert, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck';
 import { ReactComponent as GithubIcon } from './icons/github.svg';
 import { ReactComponent as UnmulIcon } from './icons/unmul.svg';
-import { ReactComponent as LogoIcon } from './icons/logo.svg';
+import { ReactComponent as LogoIcon } from './icons/user-graduate.svg';
+import { ReactComponent as QuestionIcon } from './icons/question-circle.svg';
 
 interface Props {
   children?: React.ReactNode;
@@ -49,7 +50,7 @@ const Header = () => {
         <div className="logo">
           <a className="logo" href="/">
             <div className="logo_image">
-              <LogoIcon height="50px" />
+              <LogoIcon color="#009B4C" height="50px" />
             </div>
             <div className="logo_title">
               <span>SIAuto</span>
@@ -95,7 +96,7 @@ const MainSection = () => {
   const [validated, setValidated] = useState(false);
   const [checkRequired, setCheckRequired] = useState(true);
   const [semester, setSemester] = useState("");
-  const [response, setResponse] = useState({ response: "ga", variantAlert: 'primary' });
+  const [response, setResponse] = useState({ response: "ga", variantAlert: 'secondary' });
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const tahun_ajar = `${curr_year()}/${curr_year() + 1}`;
@@ -134,7 +135,7 @@ const MainSection = () => {
       console.log("False");
     } else {
       console.log("True");
-      setResponse({ response: "Tunggu Sebentar", variantAlert: "primary" });
+      setResponse({ response: "Tunggu Sebentar", variantAlert: "secondary" });
       setShowAlert(true);
       setLoading(true);
       dataColleger.nim = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
@@ -144,7 +145,6 @@ const MainSection = () => {
         method: 'POST',
         body: JSON.stringify(dataColleger)
       });
-
       const data = await response.json();
       setLoading(false);
       setResponse({ response: data.response, variantAlert: data.variantAlert });
@@ -183,7 +183,7 @@ const MainSection = () => {
       <Form className="mb-4" onSubmit={handleSubmit} >
         <FormInput hidden="text">NIM</FormInput>
         <FormInput hidden="password" >Password</FormInput>
-        <Form.Label>Nilai Kuesioner</Form.Label>
+        <Form.Label>Nilai Kuesioner <TipsText>Nilai-nilai yang dipilih akan dirandom saat pengisian kuesioner</TipsText> </Form.Label>
         <Form.Group className="mb-3" controlId="basicFormCheckbox">
           {['1', '2', '3', '4', '5'].map((label) => <FormCheckButton
             onClick={() => onClickCheckBtn(label)} required={checkRequired} type="checkbox" label={label} />)}
@@ -203,7 +203,7 @@ const MainSection = () => {
             }} required type="radio" label={label.nama} />)}
         </Form.Group>
         <Form.Group className="mb-3" controlId="basicFormTrust">
-          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi satu dulu" />
+          <FormCheckButton onClick={() => dataColleger.cobaDulu = dataColleger.cobaDulu ? false : true} type="checkbox" label="Isi satu dulu"/>
         </Form.Group>
         <Button variant="primary" disabled={loading} type="submit">Mulai</Button>
       </Form>
@@ -230,5 +230,16 @@ const FormCheckButton = (props: Props) => {
   );
 }
 
+const TipsText = (props: Props) => {
+  return (
+    <OverlayTrigger placement="right" overlay={
+      <Tooltip>
+        {props.children}
+      </Tooltip>
+    }>
+      <span><QuestionIcon height="15"/></span>
+    </OverlayTrigger>
+  )
+}
 
 export default App;
