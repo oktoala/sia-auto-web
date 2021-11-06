@@ -15,5 +15,5 @@ npm run serve
 ```bash
 cd siauto
 npm install
-npm run
+npm start
 ```
