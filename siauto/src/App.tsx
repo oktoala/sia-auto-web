@@ -140,8 +140,11 @@ const MainSection = () => {
       setLoading(true);
       dataColleger.nim = (document.querySelector('#basicFormNIM') as HTMLInputElement).value;
       dataColleger.password = (document.querySelector('#basicFormPassword') as HTMLInputElement).value;
+      const ngrok = "https://cfb8-36-85-4-217.ngrok.io";
+      // const url = "http://localhost:5001/test-web-scrap/us-central1/scraper";
+      const url = `${ngrok}/test-web-scrap/us-central1/scraper`;
 
-      const response = await fetch('http://localhost:5001/test-web-scrap/us-central1/scraper', {
+      const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(dataColleger)
       });
