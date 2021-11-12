@@ -150,6 +150,7 @@ const MainSection = () => {
         body: JSON.stringify(dataColleger)
       });
       const data = await response.json();
+      console.log(data);
       setLoading(false);
       setResponse({ response: data.response, variantAlert: data.variantAlert });
     }

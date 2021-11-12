@@ -1,12 +1,18 @@
-const cors = require("cors")({ origin: true });
-const puppeteer = require("puppeteer-core");
+// const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 const chromium = require("chrome-aws-lambda");
 
-exports.handler = async (event, context) => {
+exports.handler = async function(event, context) {
 
-  const data = JSON.parse(event.body);
+  const json = await  event.body;
+
+  const data = await JSON.parse(json);
+
+  console.log(data);
   
   const scrap = await scrapeImages(data);
+
+  console.log(scrap);
 
   return {
     statusCode: 200,
@@ -15,15 +21,13 @@ exports.handler = async (event, context) => {
 };
 
 const scrapeImages = async (mahasiswa) => {
-  const browser = await chromium.puppeteer.launch({
-    args: chromium.args,
-    executeablePath: process.env.CHROME_EXCUTEABLE_PATH || await chromium.executeablePath,
-    headless: chromium.headless,
+  const browser = await puppeteer.launch({
+    headless: true
   });
   const page = await browser.newPage();
-
+  console.log("Hah");
   try {
-    await page.goto("https://sia.unmul.ac.id/login", { waituntil: "load", timeout: 100000 });
+    await page.goto("https://sia.unmul.ac.id/login");
     // ! Login Page
 
     await page.waitForSelector("input[name=usr]", {
@@ -52,8 +56,6 @@ const scrapeImages = async (mahasiswa) => {
     } catch (error) {
       return { response: "NIM dan Password tidak cocok. Silahkan coba lagi", variantAlert: "danger" };
     }
-
-
 
     await page.evaluate(() => {
       // Kartu Hasil Studi
