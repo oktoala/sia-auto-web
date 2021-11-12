@@ -6,30 +6,13 @@ exports.handler = async (event, context) => {
 
   const data = JSON.parse(event.body);
   
-  const scrap = await scrapeImages(dat);
+  const scrap = await scrapeImages(data);
 
   return {
     statusCode: 200,
     body: JSON.stringify(scrap)
   };
 };
-
-// exports.handler = functions
-//   .runWith({ timeoutSeconds: 300 })
-//   .https.onRequest((request: any, response: any) => {
-//     cors(request, response, async () => {
-//       console.log(typeof request.body);
-//       const text = JSON.parse(request.body);
-//       // const text = request.body;
-//       console.log(text);
-
-//       const data = await scrapeImages(text);
-
-//       console.log(`Send this ${data}`);
-//       response.send(data);
-//     });
-//   });
-
 
 const scrapeImages = async (mahasiswa) => {
   const browser = await chromium.puppeteer.launch({
