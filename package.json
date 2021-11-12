@@ -3,19 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/core": "^7.16.0",
     "@netlify/functions": "^0.8.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.1",
-    "@types/puppeteer": "^5.4.4",
+    "@types/puppeteer-core": "^5.4.0",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
-    "@typescript-eslint/parser": "^5.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "bootstrap": "^5.1.0",
+    "chrome-aws-lambda": "^10.1.0",
     "cors": "^2.8.5",
-    "puppeteer": "^11.0.0",
+    "dotenv": "^10.0.0",
+    "puppeteer-core": "^10.4.0",
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.0-beta.5",
     "react-dom": "^17.0.2",
@@ -46,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "puppeteer": "^11.0.0"
   }
 }

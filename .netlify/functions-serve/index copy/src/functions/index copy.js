@@ -11515,7 +11515,7 @@ var require_ws = __commonJS({
 var require_package = __commonJS({
   "node_modules/puppeteer-core/package.json"(exports, module2) {
     module2.exports = {
-      _from: "puppeteer-core@^10.1.0",
+      _from: "puppeteer-core@^10.4.0",
       _id: "puppeteer-core@10.4.0",
       _inBundle: false,
       _integrity: "sha512-KU8zyb7AIOqNjLCN3wkrFXxh+EVaG+zrs2P03ATNjc3iwSxHsu5/EvZiREpQ/IJiT9xfQbDVgKcsvRuzLCxglQ==",
@@ -11527,12 +11527,12 @@ var require_package = __commonJS({
       _requested: {
         type: "range",
         registry: true,
-        raw: "puppeteer-core@^10.1.0",
+        raw: "puppeteer-core@^10.4.0",
         name: "puppeteer-core",
         escapedName: "puppeteer-core",
-        rawSpec: "^10.1.0",
+        rawSpec: "^10.4.0",
         saveSpec: null,
-        fetchSpec: "^10.1.0"
+        fetchSpec: "^10.4.0"
       },
       _requiredBy: [
         "#USER",
@@ -11540,7 +11540,7 @@ var require_package = __commonJS({
       ],
       _resolved: "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-10.4.0.tgz",
       _shasum: "4e2da57c52339b8c07cd9362922020eb3c3c95bf",
-      _spec: "puppeteer-core@^10.1.0",
+      _spec: "puppeteer-core@^10.4.0",
       _where: "/home/iansyah/Programming/Javascript/Coba-scrap",
       author: {
         name: "The Chromium Authors"
@@ -45806,7 +45806,7 @@ var require_ws2 = __commonJS({
 var require_package2 = __commonJS({
   "node_modules/puppeteer/package.json"(exports, module2) {
     module2.exports = {
-      _from: "puppeteer",
+      _from: "puppeteer@^11.0.0",
       _id: "puppeteer@11.0.0",
       _inBundle: false,
       _integrity: "sha512-6rPFqN1ABjn4shgOICGDBITTRV09EjXVqhDERBDKwCLz0UyBxeeBH6Ay0vQUJ84VACmlxwzOIzVEJXThcF3aNg==",
@@ -45821,14 +45821,14 @@ var require_package2 = __commonJS({
         through: "2.3.8"
       },
       _requested: {
-        type: "tag",
+        type: "range",
         registry: true,
-        raw: "puppeteer",
+        raw: "puppeteer@^11.0.0",
         name: "puppeteer",
         escapedName: "puppeteer",
-        rawSpec: "",
+        rawSpec: "^11.0.0",
         saveSpec: null,
-        fetchSpec: "latest"
+        fetchSpec: "^11.0.0"
       },
       _requiredBy: [
         "#DEV:/",
@@ -45836,7 +45836,7 @@ var require_package2 = __commonJS({
       ],
       _resolved: "https://registry.npmjs.org/puppeteer/-/puppeteer-11.0.0.tgz",
       _shasum: "0808719c38e15315ecc1b1c28911f1c9054d201f",
-      _spec: "puppeteer",
+      _spec: "puppeteer@^11.0.0",
       _where: "/home/iansyah/Programming/Javascript/Coba-scrap",
       author: {
         name: "The Chromium Authors"
@@ -48849,7 +48849,7 @@ var require_build2 = __commonJS({
   }
 });
 
-// functions/index.ts
+// functions/index copy.ts
 __export(exports, {
   handler: () => handler
 });
@@ -48988,4 +48988,4 @@ object-assign
  * Copyright(c) 2014-2017 Douglas Christopher Wilson
  * MIT Licensed
  */
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index copy.js.map
