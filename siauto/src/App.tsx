@@ -145,18 +145,16 @@ const MainSection = () => {
       // const url = `${ngrok}/test-web-scrap/us-central1/scraper`;
       // const url =  "https://siauto.herokuapp.com/siauto";
       const url = "http://localhost:8080/siauto"
-      console.log(dataColleger);
 
       const response = await fetch(url, {
         method: 'POST',
-        body: JSON.stringify(dataColleger)
+        body: JSON.stringify(dataColleger),
+        headers: {"Content-Type": "application/json"}
       });
       const data = await response.json();
-      console.log(data);
       setLoading(false);
       setResponse({ response: data.response, variantAlert: data.variantAlert });
     }
-    console.log(dataColleger);
 
   }
 

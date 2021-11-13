@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const cors = require("cors");
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 8080;
@@ -9,6 +10,8 @@ app.listen(
   () => console.log(`Its Alive on http://localhost:${port}`)
 );
 app.use(express.json());
+
+app.use(cors());
 
 app.get('/get', (req, res) => {
   res.status(200).send({
