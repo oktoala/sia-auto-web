@@ -1,28 +1,31 @@
-// const puppeteer = require("puppeteer-core");
 const puppeteer = require("puppeteer");
-const chromium = require("chrome-aws-lambda");
+const express = require("express");
+const app = express();
+const port = process.env.PORT || 8080;
 
-exports.handler = async function(event, context) {
+app.use(express.json());
 
-  const json = await  event.body;
+app.listen(
+  port,
+  () => console.log(`Its Alive on http://localhost:${port}`)
+);
 
-  const data = await JSON.parse(json);
+app.post('/api/:id', async (req, res) => {
+  const { id } = req.params;
+  const { logo } = req.body;
+
+  const data = req.body;
 
   console.log(data);
-  
+
   const scrap = await scrapeImages(data);
 
-  console.log(scrap);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(scrap)
-  };
-};
+  res.send(scrap);
+});
 
 const scrapeImages = async (mahasiswa) => {
   const browser = await puppeteer.launch({
-    headless: true
+    headless: false
   });
   const page = await browser.newPage();
   console.log("Hah");
@@ -54,6 +57,7 @@ const scrapeImages = async (mahasiswa) => {
         timeout: 5000,
       }).then(() => console.log("Dapat KHS"));
     } catch (error) {
+      await browser.close();
       return { response: "NIM dan Password tidak cocok. Silahkan coba lagi", variantAlert: "danger" };
     }
 
@@ -179,6 +183,7 @@ const scrapeImages = async (mahasiswa) => {
     return { response: "Berhasil!! Kuesioner Telah diisi 🎉🎉", variantAlert: "success" };
   } catch (e) {
     console.log(`e: ${e}, e.name: ${e.name}`);
+    await browser.close();
     if (e.name == "TypeError") {
       return { response: "NIM dan Password tidak cocok. Silahkan coba lagi.", variantAlert: "danger" };
     }
