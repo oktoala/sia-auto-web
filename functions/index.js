@@ -10,7 +10,13 @@ app.listen(
   () => console.log(`Its Alive on http://localhost:${port}`)
 );
 
-app.post('/api/:id', async (req, res) => {
+app.get('/get', (req, res) => {
+  res.status(200).send({
+    status: "Mantap 👍"
+  })
+})
+
+app.post('/siauto', async (req, res) => {
   const { id } = req.params;
   const { logo } = req.body;
 
