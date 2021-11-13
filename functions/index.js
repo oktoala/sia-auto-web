@@ -31,8 +31,7 @@ app.post('/siauto', async (req, res) => {
 
 const scrapeImages = async (mahasiswa) => {
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox'],
-    headless: false
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
   console.log("Hah");
