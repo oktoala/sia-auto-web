@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 8080;
 
+app.use(cors());
 
 app.listen(
   port,
@@ -11,7 +12,6 @@ app.listen(
 );
 app.use(express.json());
 
-app.use(cors());
 
 app.get('/get', (req, res) => {
   res.status(200).send({
@@ -30,8 +30,9 @@ app.post('/siauto', async (req, res) => {
 });
 
 const scrapeImages = async (mahasiswa) => {
+  console.log("haha");
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: ['--no-sandbox', '--disable-dev-shm-usage'],
   });
   const page = await browser.newPage();
   try {
