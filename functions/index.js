@@ -3,12 +3,12 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(express.json());
 
 app.listen(
   port,
   () => console.log(`Its Alive on http://localhost:${port}`)
 );
+app.use(express.json());
 
 app.get('/get', (req, res) => {
   res.status(200).send({
@@ -17,8 +17,7 @@ app.get('/get', (req, res) => {
 })
 
 app.post('/siauto', async (req, res) => {
-  const { id } = req.params;
-  const { logo } = req.body;
+  console.log(req);
 
   const data = req.body;
 
@@ -34,7 +33,6 @@ const scrapeImages = async (mahasiswa) => {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
-  console.log("Hah");
   try {
     await page.goto("https://sia.unmul.ac.id/login");
     // ! Login Page
