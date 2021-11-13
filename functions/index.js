@@ -20,8 +20,6 @@ app.get('/get', (req, res) => {
 })
 
 app.post('/siauto', async (req, res) => {
-  console.log(req);
-
   const data = req.body;
 
   console.log(data);
